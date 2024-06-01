@@ -51,7 +51,7 @@ export const Registerform = () => {
                         className="px-2 py-1 my-2 rounded-lg w-fit
                         bg-blue-500 text-white font-bold hover:scale-[102%]"
                     >
-                        Login
+                        Signup 
                     </button>
                     
 
