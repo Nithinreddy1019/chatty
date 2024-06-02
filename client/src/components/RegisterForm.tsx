@@ -15,14 +15,16 @@ export const Registerform = () => {
             <div className="flex
             p-2 rounded-xl shadow-lg border-2 border-blue-500">
 
-                <div>
+                <div
+                    className="hidden w-0 md:w-fit md:block"
+                >
                     <img src={authsvg} className="w-96 h-96"/>
                 </div>
 
                 <div
                     className="p-2 
                     flex flex-col items-center
-                    min-w-[400px]"
+                    w-[350px]"
                 >
                     <Header 
                         headerLabel="Welcome to Chatty"
