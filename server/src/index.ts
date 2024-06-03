@@ -18,6 +18,8 @@ app.use(cors({
 app.use(cookieParser());
 dotenv.config();
 
+
+
 app.use("/app/v1", userRouter);
 
 app.get("/", async (req, res) => {
