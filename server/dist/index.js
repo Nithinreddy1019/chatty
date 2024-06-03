@@ -26,7 +26,6 @@ app.use((0, cors_1.default)({
 }));
 app.use((0, cookie_parser_1.default)());
 dotenv_1.default.config();
-console.log(process.env.DATABASE_URL);
 app.use("/app/v1", user_auth_1.userRouter);
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.json({ msg: "test OK" });
