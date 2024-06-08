@@ -1,22 +1,27 @@
 import { Footer } from "./ui/Footer";
 import { Header } from "./ui/Header";
-import { InputBox } from "./ui/InputBox";
 
 import authsvg from "../assets/authsvg.svg";
-import { SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { RegisterSchema } from "../schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { useState } from "react";
+import { FormError } from "./ui/FormError";
+import { FormSuccess } from "./ui/FormSuccess";
 
 
 export const Registerform = () => {
 
+    const [error, setError] = useState("")
+    const [success, setSuccess] = useState("")
+
+    const [passwordIsVisible, setPasswordIsVisible] = useState(false);
+
     const {
         register,
         handleSubmit,
-        setError,
         formState: { errors }
     } = useForm<z.infer<typeof RegisterSchema>>({
         defaultValues: {
@@ -27,7 +32,6 @@ export const Registerform = () => {
         resolver: zodResolver(RegisterSchema)
     });
 
-    const [passwordIsVisible, setPasswordIsVisible] = useState(false);
 
     const passwordVisibilityHandler = () => {
         setPasswordIsVisible(value => !value);
@@ -136,6 +140,13 @@ export const Registerform = () => {
                         </button>
                     </div>
                     {errors && <p className="text-xs text-red-500">{errors.password?.message}</p>}
+
+                        
+                    <div className="p-2 w-full space-y-2">
+                        <FormError formErrorMessage={error} />
+                        <FormSuccess formSuccessMessage={success} />
+                    </div> 
+
 
                     <button
                         className="px-2 py-1 my-2 rounded-lg w-fit

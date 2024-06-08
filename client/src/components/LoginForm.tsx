@@ -8,6 +8,8 @@ import { LoginSchema } from "../schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import { FormError } from "./ui/FormError";
+import { FormSuccess } from "./ui/FormSuccess";
 
 
 export const Loginform = () => {
@@ -16,14 +18,16 @@ export const Loginform = () => {
 
     const [passwordIsVisible, setPasswordIsVisible] = useState(false);
 
+    const [error, setError] = useState("")
+    const [success, setSuccess] = useState("")
+
     const passwordVisibilityHandler = () => {
         setPasswordIsVisible(value => !value);
     };
 
     const {
         register,
-        handleSubmit, 
-        setError,
+        handleSubmit,
         formState: { errors }
     }= useForm<z.infer<typeof LoginSchema>>({
         defaultValues: {
@@ -119,6 +123,12 @@ export const Loginform = () => {
                         </button>
                     </div>
                     {errors && <p className="text-xs text-red-500">{errors.password?.message}</p>}
+
+                    <div className="p-2 w-full space-y-2">
+                        <FormError formErrorMessage={error} />
+                        <FormSuccess formSuccessMessage={success} />
+                    </div>        
+
 
                     <button
                         className="px-2 py-1 my-2 rounded-lg w-fit
