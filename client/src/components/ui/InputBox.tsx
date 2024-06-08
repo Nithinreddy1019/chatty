@@ -1,27 +1,22 @@
 import { useState } from "react";
-import { FieldValues, UseFormRegister } from "react-hook-form";
-import * as z from "zod";
 
 import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
-import { LoginSchema } from "../../schema/auth-schema";
 
 
 interface InputBoxProps {
     inputLabel: string, 
     inputPlaceholder: string,
     inputType: "text" | "email" | "password",
-    inputProperty: "email" | "username" | "password"
-    register: UseFormRegister<z.infer<typeof LoginSchema>>
+
 };
+
 
 
 export const InputBox = ({
     inputLabel,
     inputPlaceholder,
     inputType,
-    register,
-    inputProperty
 }: InputBoxProps) => {
 
     const isTextOrEmail = inputType === "text" || inputType === "email";
@@ -51,7 +46,7 @@ export const InputBox = ({
                         focus:outline-blue-500 border-2 focus:border-blue-500 focus:ring-blue-500"
                         placeholder={inputPlaceholder}
                         type={inputType}
-                        {...register(`${inputProperty}`)}
+                        
                     />
                 </div>
             }
@@ -73,7 +68,7 @@ export const InputBox = ({
                         focus:outline-blue-500 border-2 focus:border-blue-500 focus:ring-blue-500"
                         placeholder={inputPlaceholder}
                         type={passwordIsVisible ? "text" : "password"}
-                        {...register(`${inputProperty}`)}
+                        
                     />
                     <button
                         onClick={passwordVisibilityHandler} 
