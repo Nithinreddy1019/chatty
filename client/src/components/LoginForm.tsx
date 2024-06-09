@@ -2,7 +2,7 @@ import { Footer } from "./ui/Footer";
 import { Header } from "./ui/Header";
 
 import authsvg from "../assets/authsvg.svg";
-import { useState, useTransition } from "react";
+import { useEffect, useState} from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { LoginSchema } from "../schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,16 +10,21 @@ import * as z from "zod";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { FormError } from "./ui/FormError";
 import { FormSuccess } from "./ui/FormSuccess";
-
+import axios, { AxiosError } from "axios";
+import { useRecoilState } from "recoil";
+import { userTokenAtom } from "../store/atoms/UserAtom";
+import Cookies from "js-cookie";
 
 export const Loginform = () => {
 
-    const [isPending, startTransition] = useTransition();
+    const [isPending, setIsPending] = useState(false);
 
     const [passwordIsVisible, setPasswordIsVisible] = useState(false);
 
-    const [error, setError] = useState("")
-    const [success, setSuccess] = useState("")
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+
+    const [token, setToken] = useRecoilState(userTokenAtom);
 
     const passwordVisibilityHandler = () => {
         setPasswordIsVisible(value => !value);
@@ -38,10 +43,30 @@ export const Loginform = () => {
     });
 
 
-    const onSubmit: SubmitHandler<z.infer<typeof LoginSchema>> = (values) => {
-        console.log("sumitted")
-        console.log(values);
+    const onSubmit: SubmitHandler<z.infer<typeof LoginSchema>> = async (values) => {
+
+        setIsPending(true);
+        setError("");
+        setSuccess("");
+
+        
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/login`, { ...values }, {withCredentials: true});
+
+            setSuccess(response.data.message);   
+            setToken(Cookies.get("token")!);
+            
+        } catch (error) {
+            if(error instanceof AxiosError) {
+                setError(error.response?.data.error)
+            } else {
+                setError("Something went wrong")
+            };
+        } finally {
+            setIsPending(false);
+        }
     };
+
 
 
     return (
@@ -87,6 +112,7 @@ export const Loginform = () => {
                             placeholder={"JohnDoe@gmail.com"}
                             type="email"
                             {...register("email")}
+                            disabled={isPending}
                             
                         />
                     </div>
@@ -109,6 +135,7 @@ export const Loginform = () => {
                             placeholder="******"
                             type={passwordIsVisible ? "text" : "password"}
                             {...register("password")}
+                            disabled={isPending}
                             
                         />
                         <button
@@ -134,6 +161,7 @@ export const Loginform = () => {
                         className="px-2 py-1 my-2 rounded-lg w-fit
                         bg-blue-500 text-white font-bold hover:scale-[102%]"
                         type="submit"
+                        disabled={isPending}
                     >
                         Login
                     </button>
