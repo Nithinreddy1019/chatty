@@ -10,9 +10,18 @@ import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { useState } from "react";
 import { FormError } from "./ui/FormError";
 import { FormSuccess } from "./ui/FormSuccess";
+import { useRecoilState } from "recoil";
+import { userTokenAtom } from "../store/atoms/UserAtom";
+import axios, { AxiosError } from "axios";
+import Cookies from "js-cookie";
 
 
 export const Registerform = () => {
+
+    const [isPending, setIsPending] = useState(false);
+
+    const [token, setToken] = useRecoilState(userTokenAtom);
+
 
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
@@ -37,9 +46,27 @@ export const Registerform = () => {
         setPasswordIsVisible(value => !value);
     };
 
-    const onSubmit: SubmitHandler<z.infer<typeof RegisterSchema>> = (values) => {
-        console.log("sumitted")
-        console.log(values);
+    const onSubmit: SubmitHandler<z.infer<typeof RegisterSchema>> = async (values) => {
+        setIsPending(true);
+        setError("");
+        setSuccess("");
+
+        
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/signup`, { ...values }, {withCredentials: true});
+
+            setSuccess(response.data.message);   
+            setToken(Cookies.get("token")!);
+            
+        } catch (error) {
+            if(error instanceof AxiosError) {
+                setError(error.response?.data.error)
+            } else {
+                setError("Something went wrong")
+            };
+        } finally {
+            setIsPending(false);
+        }
     };
 
     return (
@@ -85,6 +112,7 @@ export const Registerform = () => {
                             placeholder="JohnDoe@gmail.com"
                             type="email"
                             {...register("email")}
+                            disabled={isPending}
                         />
                     </div>
                     {errors && <p className="text-xs text-red-500">{errors.email?.message}</p>}
@@ -106,6 +134,7 @@ export const Registerform = () => {
                             placeholder="JohnDoe"
                             type="text"
                             {...register("username")}
+                            disabled={isPending}
                         />
                     </div>
                     {errors && <p className="text-xs text-red-500">{errors.username?.message}</p>}
@@ -127,6 +156,7 @@ export const Registerform = () => {
                             placeholder="******"
                             type={passwordIsVisible ? "text" : "password"}
                             {...register("password")}
+                            disabled={isPending}
                         />
                         <button
                             onClick={passwordVisibilityHandler} 
@@ -152,6 +182,7 @@ export const Registerform = () => {
                         className="px-2 py-1 my-2 rounded-lg w-fit
                         bg-blue-500 text-white font-bold hover:scale-[102%]"
                         type="submit"
+                        disabled={isPending}
                     >
                         Signup 
                     </button>
