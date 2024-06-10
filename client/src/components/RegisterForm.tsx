@@ -7,13 +7,15 @@ import { RegisterSchema } from "../schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormError } from "./ui/FormError";
 import { FormSuccess } from "./ui/FormSuccess";
-import { useRecoilState } from "recoil";
-import { userTokenAtom } from "../store/atoms/UserAtom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { userDetailsAtom, userTokenAtom } from "../store/atoms/UserAtom";
 import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import { useUserLoggedIn } from "../hooks/useUserLoggedIn";
 
 
 export const Registerform = () => {
@@ -27,6 +29,22 @@ export const Registerform = () => {
     const [success, setSuccess] = useState("")
 
     const [passwordIsVisible, setPasswordIsVisible] = useState(false);
+
+    const navigate = useNavigate();
+
+    const {loading, loggedIn} = useUserLoggedIn();
+
+    const useDetails = useRecoilValue(userDetailsAtom)
+
+    useEffect(() => {
+        console.log(token);
+        console.log(loggedIn);
+        console.log(useDetails);
+
+        if(loggedIn && token) {
+            navigate("/chats");
+        }
+    })
 
     const {
         register,
@@ -57,6 +75,8 @@ export const Registerform = () => {
 
             setSuccess(response.data.message);   
             setToken(Cookies.get("token")!);
+
+            navigate("/chats");
             
         } catch (error) {
             if(error instanceof AxiosError) {

@@ -1,4 +1,5 @@
-import { atom } from "recoil";
+import { atom, selector } from "recoil";
+import Cookies from "js-cookie";
 
 
 export const userLoggedInAtom = atom({
@@ -8,14 +9,11 @@ export const userLoggedInAtom = atom({
 
 export const userTokenAtom = atom({
     key: "userTokenAtom",
-    default: ""
+    default: Cookies.get("token")
 });
 
 export const userDetailsAtom = atom({
     key: "userDetailsAtom",
-    default: {
-        username: "",
-        email: ""
-    }
+    default: {}
 });
 
