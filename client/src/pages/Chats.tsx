@@ -1,11 +1,10 @@
+import { useRecoilState, useRecoilValue } from "recoil";
+import { useUserLoggedIn } from "../hooks/useUserLoggedIn";
+import { userDetailsAtom, userTokenAtom } from "../store/atoms/UserAtom";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { userDetailsAtom, userTokenAtom } from "../store/atoms/UserAtom";
-import { useUserLoggedIn } from "../hooks/useUserLoggedIn";
 
-
-const HomePage = () => {
+const Chats = () => {
 
     const {loading, loggedIn} = useUserLoggedIn();
 
@@ -20,14 +19,17 @@ const HomePage = () => {
         console.log(loggedIn);
         console.log(useDetails);
 
-        if(loggedIn && token) {
-            navigate("/chats");
+        if(!loggedIn && !token) {
+            navigate("/");
         };
     })
+
     return (
-        <div>Home Page</div>
+        <div>
+            chats
+        </div>
     )
 };
 
 
-export default HomePage;
+export default Chats;
