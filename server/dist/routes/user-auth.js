@@ -21,6 +21,41 @@ const client_1 = require("@prisma/client");
 exports.userRouter = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
 const JwtSecret = process.env.JWT_SECRET;
+exports.userRouter.post("/profile", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = req.cookies["token"];
+    if (!token) {
+        return res.status(403).json({
+            error: "token not found"
+        });
+    }
+    ;
+    const verifiedToken = jsonwebtoken_1.default.verify(token, JwtSecret);
+    if (!verifiedToken) {
+        return res.status(403).json({
+            error: "Forbidden"
+        });
+    }
+    ;
+    try {
+        const user = yield prisma.user.findUnique({
+            where: {
+                id: verifiedToken.userId
+            }
+        });
+        return res.status(200).json({
+            user: {
+                email: user === null || user === void 0 ? void 0 : user.email,
+                username: user === null || user === void 0 ? void 0 : user.username
+            }
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            error: "Internal server error"
+        });
+    }
+    ;
+}));
 exports.userRouter.post('/signup', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const validatedFields = schema_1.signupSchema.safeParse(req.body);
     if (!validatedFields.success) {
@@ -52,7 +87,7 @@ exports.userRouter.post('/signup', (req, res) => __awaiter(void 0, void 0, void 
             }
         });
         const token = jsonwebtoken_1.default.sign({ userId: user.id }, JwtSecret);
-        return res.cookie("token", token).status(200).json({
+        return res.cookie("token", token, { sameSite: "none", httpOnly: false, secure: true, maxAge: 24 * 60 * 60 * 100 }).status(200).json({
             message: "User successfully created"
         });
     }
@@ -92,7 +127,7 @@ exports.userRouter.post("/login", (req, res) => __awaiter(void 0, void 0, void 0
         }
         ;
         const token = jsonwebtoken_1.default.sign({ userId: userExists.id }, JwtSecret);
-        return res.cookie("token", token).status(200).json({
+        return res.cookie("token", token, { sameSite: "none", httpOnly: false, secure: true, maxAge: 24 * 60 * 60 * 100 }).status(200).json({
             message: "Login successfull"
         });
     }

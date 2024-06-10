@@ -11,9 +11,11 @@ import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { FormError } from "./ui/FormError";
 import { FormSuccess } from "./ui/FormSuccess";
 import axios, { AxiosError } from "axios";
-import { useRecoilState } from "recoil";
-import { userTokenAtom } from "../store/atoms/UserAtom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { userDetailsAtom, userLoggedInAtom, userTokenAtom } from "../store/atoms/UserAtom";
 import Cookies from "js-cookie";
+import { useUserLoggedIn } from "../hooks/useUserLoggedIn";
+import { useNavigate } from "react-router-dom";
 
 export const Loginform = () => {
 
@@ -25,6 +27,22 @@ export const Loginform = () => {
     const [success, setSuccess] = useState("");
 
     const [token, setToken] = useRecoilState(userTokenAtom);
+
+    const navigate = useNavigate();
+
+    const {loading, loggedIn} = useUserLoggedIn();
+
+    const useDetails = useRecoilValue(userDetailsAtom)
+
+    useEffect(() => {
+        console.log(token);
+        console.log(loggedIn);
+        console.log(useDetails);
+
+        if(loggedIn && token) {
+            navigate("/chats");
+        }
+    })
 
     const passwordVisibilityHandler = () => {
         setPasswordIsVisible(value => !value);
@@ -54,7 +72,11 @@ export const Loginform = () => {
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/login`, { ...values }, {withCredentials: true});
 
             setSuccess(response.data.message);   
-            setToken(Cookies.get("token")!);
+            if(Cookies.get("token")){
+                setToken(Cookies.get("token")!);
+                navigate("/chats");
+            };
+            
             
         } catch (error) {
             if(error instanceof AxiosError) {
@@ -67,6 +89,12 @@ export const Loginform = () => {
         }
     };
 
+
+    if(loading) {
+        return (
+            <div>Loading...</div>
+        )
+    }
 
 
     return (

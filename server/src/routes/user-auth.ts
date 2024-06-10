@@ -1,6 +1,6 @@
 import express from "express";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 import { loginSchema, signupSchema } from "../schema";
 import { PrismaClient } from "@prisma/client";
@@ -10,6 +10,46 @@ export const userRouter = express.Router();
 
 const prisma = new PrismaClient();
 const JwtSecret = process.env.JWT_SECRET as string;
+
+userRouter.post("/profile", async (req, res) => {
+    const token = req.cookies["token"];
+
+    if(!token){
+        return res.status(403).json({
+            error: "token not found"
+        });
+    };
+
+    const verifiedToken = jwt.verify(token, JwtSecret) as JwtPayload;
+
+    if(!verifiedToken) {
+        return res.status(403).json({
+            error: "Forbidden"
+        });
+    };
+    
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: verifiedToken.userId
+            }
+        });
+
+        return res.status(200).json({
+            user: {
+                email: user?.email,
+                username: user?.username
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: "Internal server error"
+        });  
+    };
+
+
+});
 
 userRouter.post('/signup', async (req, res) => {
     
@@ -49,7 +89,7 @@ userRouter.post('/signup', async (req, res) => {
         });
 
         const token = jwt.sign({userId: user.id}, JwtSecret);
-        return res.cookie("token", token).status(200).json({
+        return res.cookie("token", token, {sameSite: "none", httpOnly: false, secure: true, maxAge: 24*60*60*100}).status(200).json({
             message: "User successfully created"
         });
 
@@ -96,7 +136,7 @@ userRouter.post("/login", async (req, res) => {
 
         const token = jwt.sign({userId: userExists.id}, JwtSecret);
 
-        return res.cookie("token", token).status(200).json({
+        return res.cookie("token", token, {sameSite: "none", httpOnly: false, secure: true, maxAge: 24*60*60*100}).status(200).json({
             message: "Login successfull"
         });
 
