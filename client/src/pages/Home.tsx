@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { userDetailsAtom, userTokenAtom } from "../store/atoms/UserAtom";
 import { useUserLoggedIn } from "../hooks/useUserLoggedIn";
+import { NavBar } from "../components/NavBar";
 
 
 const HomePage = () => {
@@ -23,9 +24,15 @@ const HomePage = () => {
         if(loggedIn && token) {
             navigate("/chats");
         };
-    })
+    });
+
+
     return (
-        <div>Home Page</div>
+        <main
+            className="bg-white h-screen w-screen"
+        >
+            <NavBar />
+        </main>
     )
 };
 
