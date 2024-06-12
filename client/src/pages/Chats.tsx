@@ -3,7 +3,8 @@ import { useUserLoggedIn } from "../hooks/useUserLoggedIn";
 import { userDetailsAtom, userTokenAtom } from "../store/atoms/UserAtom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ContactCard } from "../components/ui/Contsctcard";
+import { ContactCard } from "../components/ui/ContactCard";
+import { AppuserCard } from "../components/ui/AppuserCard";
 
 const Chats = () => {
 
@@ -48,9 +49,7 @@ const Chats = () => {
                     />
                 </div>
 
-                <div>
-                    App Uaser
-                </div>
+                <AppuserCard />
                 
             </div>
             <div
