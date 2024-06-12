@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ContactCard } from "../components/ui/ContactCard";
 import { AppuserCard } from "../components/ui/AppuserCard";
+import { ChatSection } from "../components/ChatSection";
 
 const Chats = () => {
 
@@ -55,7 +56,7 @@ const Chats = () => {
             <div
                 className="h-full w-3/4"
             >
-                chat page
+                <ChatSection />
             </div>
         </main>
     )
