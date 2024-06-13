@@ -9,19 +9,19 @@ export const ChatSection = () => {
             flex flex-col"
         >
             <div
-                className="bg-blue-50 h-14 rounded-md
+                className="bg-blue-500 h-14 rounded-md
                 flex items-center p-2 gap-x-4"
             >
                 <div
                     className="h-10 w-10 bg-white rounded-full
                     flex justify-center items-center group-hover:opacity-80"
                 >
-                    <p className="text-xl font-semibold">
+                    <p className="text-xl font-semibold text-blue-500">
                         U
                     </p>
                 </div>
                 <div>
-                    <p className="text-md font-semibold">Username</p>
+                    <p className="text-md font-semibold text-white tracking-wide">Username</p>
                 </div>
             </div>
             <div

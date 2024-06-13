@@ -46,8 +46,20 @@ const Chats = () => {
                 flex flex-col ${!contactSelected ? "w-full" : "hidden md:flex"}`}
             >
                 <div
-                    className="w-full flex-1"
+                    className="w-full flex-1 space-y-2"
                 >
+                    <ContactCard 
+                        cardUserId="1"
+                        cardUsername="Username"
+                        cardLastMessage="message one"
+                        onClick={contactSelectHandler}
+                    />
+                    <ContactCard 
+                        cardUserId="1"
+                        cardUsername="Username"
+                        cardLastMessage="message one"
+                        onClick={contactSelectHandler}
+                    />
                     <ContactCard 
                         cardUserId="1"
                         cardUsername="Username"
