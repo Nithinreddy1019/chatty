@@ -6,16 +6,18 @@ import { useNavigate } from "react-router-dom";
 import { ContactCard } from "../components/ui/ContactCard";
 import { AppuserCard } from "../components/ui/AppuserCard";
 import { ChatSection } from "../components/ChatSection";
+import { ContactSelectAtom } from "../store/atoms/ContactSelect";
 
 const Chats = () => {
 
     const navigate = useNavigate();
+
     const {loading, loggedIn} = useUserLoggedIn();
 
     const useDetails = useRecoilValue(userDetailsAtom);
     const [token, setToken] = useRecoilState(userTokenAtom);
 
-    const [width, setWidth] = useState(300);
+    const [contactSelected, setContactSelected] = useRecoilState(ContactSelectAtom);
     
 
     useEffect(() => {
@@ -29,6 +31,9 @@ const Chats = () => {
     });
 
 
+    const contactSelectHandler = async () => {
+
+    };
 
     return (
 
@@ -37,8 +42,8 @@ const Chats = () => {
             flex "
         >
             <div
-                className="h-full w-1/4 border-2 p-2
-                flex flex-col"
+                className={`h-full md:w-1/4 border-r-2 p-2
+                flex flex-col ${!contactSelected ? "w-full" : "hidden md:flex"}`}
             >
                 <div
                     className="w-full flex-1"
@@ -47,6 +52,7 @@ const Chats = () => {
                         cardUserId="1"
                         cardUsername="Username"
                         cardLastMessage="message one"
+                        onClick={contactSelectHandler}
                     />
                 </div>
 
@@ -54,9 +60,13 @@ const Chats = () => {
                 
             </div>
             <div
-                className="h-full w-3/4"
+                className={`h-full w-3/4
+                ${!contactSelected ? "hidden md:w-3/4" : "w-full"}`}
             >
-                <ChatSection />
+                {
+                    contactSelected && <ChatSection />
+                }
+                
             </div>
         </main>
     )
