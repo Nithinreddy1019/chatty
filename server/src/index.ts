@@ -2,12 +2,14 @@ import express, { json } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import http from "http";
+import ws from "ws";
 
 import { userRouter } from "./routes/user-auth";
+import { setUpWebsocket } from "./routes/socket";
 
 const port = 3000;
 const app = express();
-
 
 
 app.use(express.json());
@@ -26,6 +28,9 @@ app.get("/", async (req, res) => {
     return res.json({msg: "test OK"})
 });
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
     console.log(`Listening on PORT - ${port}`);
 });
+
+const wss = new ws.WebSocketServer({ server });
+setUpWebsocket(wss);
