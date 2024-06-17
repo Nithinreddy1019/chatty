@@ -1,11 +1,12 @@
 import { WebSocketServer } from "ws";
 import * as jwt from "jsonwebtoken";
+import { prisma } from "../routes/user-auth"
 
 export const setUpWebsocket = (wss: WebSocketServer): void => {
 
     const clients = new Map();
 
-    wss.on('connection', function connection(ws, req) {
+    wss.on('connection', async function connection(ws, req) {
         
         const cookies = req.headers.cookie;
         if(!cookies) {
@@ -23,15 +24,28 @@ export const setUpWebsocket = (wss: WebSocketServer): void => {
             if(!tokenVerified) ws.close();
 
             const userId = tokenVerified.userId;
-            (ws as any).userId = userId;
+            
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: userId
+                }
+            });
+
+            (ws as any).userId = user?.id;
+            (ws as any).username = user?.username;
+            
             
         };
         
 
-        console.log([...wss.clients])
+        [...wss.clients].forEach(client => {
+            client.send(JSON.stringify({
+                online: [...wss.clients].map((c:any) => ({userId: c.userId, username: c.username}))
+            }));
+        });
 
         console.log('A new client Connected!');
-        ws.send('Welcome New Client!');
+        // ws.send('Welcome New Client!');
         
 
         ws.on('message', function incoming(message: string) {
