@@ -1,7 +1,7 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useUserLoggedIn } from "../hooks/useUserLoggedIn";
 import { userDetailsAtom, userTokenAtom } from "../store/atoms/UserAtom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ContactCard } from "../components/ui/ContactCard";
 import { AppuserCard } from "../components/ui/AppuserCard";
@@ -16,19 +16,49 @@ const Chats = () => {
 
     const useDetails = useRecoilValue(userDetailsAtom);
     const [token, setToken] = useRecoilState(userTokenAtom);
-
     const [contactSelected, setContactSelected] = useRecoilState(ContactSelectAtom);
     
+    const [ws, setWs] = useState<WebSocket | null>(null);
+    const [onlinePeople, setOnlinePeople] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
-        console.log(token);
-        console.log(loggedIn);
-        console.log(useDetails);
-
         if(!loggedIn && !token) {
             navigate("/");
         };
-    });
+
+        const ws = new WebSocket("ws://localhost:3000")
+        setWs(ws);
+        ws.addEventListener('message', handleMessage)
+
+
+        return () => {
+            ws.close();
+        }
+        
+    }, [loggedIn, token]);
+
+    useEffect(() => {
+        console.log(onlinePeople)
+    }, [onlinePeople])
+
+    const handleMessage = async (e: MessageEvent) => {
+        const messageData = await JSON.parse(e.data);
+        if(messageData.online) {
+            const people = {};
+
+            const peopleArray: [{}] = messageData.online;
+
+            let updatedPeople: { [key: string]: string } = {}
+            peopleArray.forEach((c: any) => (
+                updatedPeople[c.userId] = c.username
+            ))
+           
+            console.log(updatedPeople);
+            setOnlinePeople({...updatedPeople});
+        };
+        
+        
+    };
 
 
     const contactSelectHandler = async () => {
@@ -48,24 +78,22 @@ const Chats = () => {
                 <div
                     className="w-full flex-1 space-y-2"
                 >
-                    <ContactCard 
-                        cardUserId="1"
-                        cardUsername="Username"
-                        cardLastMessage="message one"
-                        onClick={contactSelectHandler}
-                    />
-                    <ContactCard 
-                        cardUserId="1"
-                        cardUsername="Username"
-                        cardLastMessage="message one"
-                        onClick={contactSelectHandler}
-                    />
-                    <ContactCard 
-                        cardUserId="1"
-                        cardUsername="Username"
-                        cardLastMessage="message one"
-                        onClick={contactSelectHandler}
-                    />
+                    {
+                        onlinePeople && 
+                        Object.keys(onlinePeople).map(userId => {
+                            if (!userId || !onlinePeople[userId]) return null;
+                            return (
+                                <ContactCard
+                                    key={userId} 
+                                    cardUserId={userId}
+                                    cardUsername={onlinePeople[userId]}
+                                    cardLastMessage="so"
+                                    onClick={contactSelectHandler}
+                                />
+                            )
+                            
+                        })
+                    }
                 </div>
 
                 <AppuserCard />
