@@ -8,7 +8,7 @@ import { PrismaClient } from "@prisma/client";
 
 export const userRouter = express.Router();
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 const JwtSecret = process.env.JWT_SECRET as string;
 
 userRouter.post("/profile", async (req, res) => {

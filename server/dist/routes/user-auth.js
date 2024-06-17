@@ -12,14 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userRouter = void 0;
+exports.prisma = exports.userRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const schema_1 = require("../schema");
 const client_1 = require("@prisma/client");
 exports.userRouter = express_1.default.Router();
-const prisma = new client_1.PrismaClient();
+exports.prisma = new client_1.PrismaClient();
 const JwtSecret = process.env.JWT_SECRET;
 exports.userRouter.post("/profile", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies["token"];
@@ -37,7 +37,7 @@ exports.userRouter.post("/profile", (req, res) => __awaiter(void 0, void 0, void
     }
     ;
     try {
-        const user = yield prisma.user.findUnique({
+        const user = yield exports.prisma.user.findUnique({
             where: {
                 id: verifiedToken.userId
             }
@@ -68,7 +68,7 @@ exports.userRouter.post('/signup', (req, res) => __awaiter(void 0, void 0, void 
     const salt = yield bcryptjs_1.default.genSalt(10);
     const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
     try {
-        const emailExists = yield prisma.user.findUnique({
+        const emailExists = yield exports.prisma.user.findUnique({
             where: {
                 email: email
             }
@@ -79,7 +79,7 @@ exports.userRouter.post('/signup', (req, res) => __awaiter(void 0, void 0, void 
             });
         }
         ;
-        const user = yield prisma.user.create({
+        const user = yield exports.prisma.user.create({
             data: {
                 email,
                 username,
@@ -108,7 +108,7 @@ exports.userRouter.post("/login", (req, res) => __awaiter(void 0, void 0, void 0
     ;
     const { email, password } = validatedFields.data;
     try {
-        const userExists = yield prisma.user.findUnique({
+        const userExists = yield exports.prisma.user.findUnique({
             where: {
                 email
             }
