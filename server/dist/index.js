@@ -19,6 +19,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const ws_1 = __importDefault(require("ws"));
 const user_auth_1 = require("./routes/user-auth");
 const socket_1 = require("./routes/socket");
+const chats_1 = require("./routes/chats");
 const port = 3000;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -29,6 +30,7 @@ app.use((0, cors_1.default)({
 app.use((0, cookie_parser_1.default)());
 dotenv_1.default.config();
 app.use("/app/v1", user_auth_1.userRouter);
+app.use("/app/v1", chats_1.chat_router);
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.json({ msg: "test OK" });
 }));

@@ -18,34 +18,23 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const schema_1 = require("../schema");
 const client_1 = require("@prisma/client");
+const authMiddleware_1 = require("../middlewares/authMiddleware");
 exports.userRouter = express_1.default.Router();
 exports.prisma = new client_1.PrismaClient();
 const JwtSecret = process.env.JWT_SECRET;
-exports.userRouter.post("/profile", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.userRouter.post("/profile", authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies["token"];
-    if (!token) {
-        return res.status(403).json({
-            error: "token not found"
-        });
-    }
-    ;
-    const verifiedToken = jsonwebtoken_1.default.verify(token, JwtSecret);
-    if (!verifiedToken) {
-        return res.status(403).json({
-            error: "Forbidden"
-        });
-    }
-    ;
     try {
         const user = yield exports.prisma.user.findUnique({
             where: {
-                id: verifiedToken.userId
+                id: req.userId
             }
         });
         return res.status(200).json({
             user: {
                 email: user === null || user === void 0 ? void 0 : user.email,
-                username: user === null || user === void 0 ? void 0 : user.username
+                username: user === null || user === void 0 ? void 0 : user.username,
+                userId: user === null || user === void 0 ? void 0 : user.id
             }
         });
     }

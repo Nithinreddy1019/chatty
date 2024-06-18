@@ -14,6 +14,10 @@ export const userTokenAtom = atom({
 
 export const userDetailsAtom = atom({
     key: "userDetailsAtom",
-    default: {}
+    default: {
+        email: "",
+        username: "",
+        userId: ""
+    }
 });
 

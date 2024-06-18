@@ -5,19 +5,21 @@ interface ContactCardProps {
     cardUsername: string,
     cardUserId: string,
     cardLastMessage: string,
-    onClick: MouseEventHandler<HTMLDivElement>
+    onClick: MouseEventHandler<HTMLDivElement>,
+    className: string
 }
 
 export const ContactCard = ({
     cardUsername,
     cardUserId,
     cardLastMessage,
-    onClick
+    onClick,
+    className
 }: ContactCardProps) => {
     return (
         <div
-            className="h-14 rounded-md p-2 cursor-pointer bg-blue-500 hover:scale-[102%]
-            flex items-center gap-x-4"
+            className={`h-14 rounded-md p-2 cursor-pointer bg-blue-500 hover:scale-[102%]
+            flex items-center gap-x-4 ${className}`}
             onClick={onClick}
         >
             <div

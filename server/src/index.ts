@@ -7,6 +7,7 @@ import ws from "ws";
 
 import { userRouter } from "./routes/user-auth";
 import { setUpWebsocket } from "./routes/socket";
+import { chat_router } from "./routes/chats";
 
 const port = 3000;
 const app = express();
@@ -23,6 +24,7 @@ dotenv.config();
 
 
 app.use("/app/v1", userRouter);
+app.use("/app/v1", chat_router);
 
 app.get("/", async (req, res) => {
     return res.json({msg: "test OK"})
