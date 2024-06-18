@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ContactCard } from "../components/ui/ContactCard";
 import { AppuserCard } from "../components/ui/AppuserCard";
 import { ChatSection } from "../components/ChatSection";
-import { ContactSelectAtom } from "../store/atoms/ContactSelect";
+import { ContactSelectAtom, ContactSelectedIdAtom } from "../store/atoms/ContactSelect";
 
 import { IoIosChatboxes } from "react-icons/io";
 
@@ -22,6 +22,10 @@ const Chats = () => {
     
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [onlinePeople, setOnlinePeople] = useState<{ [key: string]: string }>({});
+    const [ selectedContactId, setSelectedContactId ] = useRecoilState(ContactSelectedIdAtom);
+
+    const userdertails = useRecoilValue(userDetailsAtom);
+
 
     useEffect(() => {
         if(!loggedIn && !token) {
@@ -40,7 +44,7 @@ const Chats = () => {
     }, [loggedIn, token]);
 
     useEffect(() => {
-        console.log(onlinePeople)
+        
     }, [onlinePeople])
 
     const handleMessage = async (e: MessageEvent) => {
@@ -55,7 +59,7 @@ const Chats = () => {
                 updatedPeople[c.userId] = c.username
             ))
            
-            console.log(updatedPeople);
+            delete updatedPeople[userdertails.userId]
             setOnlinePeople({...updatedPeople});
         };
         
@@ -63,9 +67,18 @@ const Chats = () => {
     };
 
 
-    const contactSelectHandler = async () => {
-
+    const contactSelectHandler = async (userId: string) => {
+        setSelectedContactId(userId);
+        setContactSelected(true);
     };
+
+    if(loading) {
+        return (
+            <div>
+                Loading...
+            </div>
+        )
+    }
 
     return (
 
@@ -96,7 +109,8 @@ const Chats = () => {
                                     cardUserId={userId}
                                     cardUsername={onlinePeople[userId]}
                                     cardLastMessage="so"
-                                    onClick={contactSelectHandler}
+                                    onClick={() => contactSelectHandler(userId)}
+                                    className={`${selectedContactId === userId ? "border-4 border-blue-500 bg-blue-400" : ""}`}
                                 />
                             )
                             
@@ -109,7 +123,7 @@ const Chats = () => {
             </div>
             <div
                 className={`h-full w-3/4
-                ${!contactSelected ? "hidden md:w-3/4" : "w-full"}`}
+                ${!contactSelected ? "hidden md:w-3/4" : ""}`}
             >
                 {
                     contactSelected && <ChatSection />

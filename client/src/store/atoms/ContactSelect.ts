@@ -8,7 +8,7 @@ export const ContactSelectAtom = atom({
 });
 
 
-export const ContactSelectedDetailsAtom = atom({
-    key: "ContactSelectedDetailsAtom",
+export const ContactSelectedIdAtom = atom({
+    key: "ContactSelectedIdAtom",
     default: ""
 });
