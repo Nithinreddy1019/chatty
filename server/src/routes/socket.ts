@@ -9,13 +9,18 @@ export const setUpWebsocket = (wss: WebSocketServer): void => {
     wss.on('connection', async function connection(ws, req) {
         
         const cookies = req.headers.cookie;
+        
         if(!cookies) {
             ws.close();
         };
 
-        const tokenCookieString = cookies?.split(";").find(str => str.startsWith("token="));
+        const tokenCookieString = cookies?.split(";").find(str => str.trim().startsWith("token="));
 
-        if(!tokenCookieString) ws.close();
+
+        if(!tokenCookieString){
+            ws.close();
+            return;
+        };
 
         const token = tokenCookieString?.split("=")[1];
 
@@ -24,20 +29,24 @@ export const setUpWebsocket = (wss: WebSocketServer): void => {
             if(!tokenVerified) ws.close();
 
             const userId = tokenVerified.userId;
-            
-            const user = await prisma.user.findUnique({
-                where: {
-                    id: userId
-                }
-            });
 
-            (ws as any).userId = user?.id;
-            (ws as any).username = user?.username;
-            
+            try {
+                const user = await prisma.user.findUnique({
+                    where: {
+                        id: userId
+                    }
+                });
+
+                (ws as any).userId = user?.id;
+                (ws as any).username = user?.username;
+            } catch (error) {
+                ws.close();
+                return;
+            }
             
         };
         
-
+        
         [...wss.clients].forEach(client => {
             client.send(JSON.stringify({
                 online: [...wss.clients].map((c:any) => ({userId: c.userId, username: c.username}))
