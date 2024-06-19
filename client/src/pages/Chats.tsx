@@ -44,8 +44,8 @@ const Chats = () => {
     }, [loggedIn, token]);
 
     useEffect(() => {
-        
-    }, [onlinePeople])
+        console.log(selectedContactId);
+    }, [])
 
     const handleMessage = async (e: MessageEvent) => {
         const messageData = await JSON.parse(e.data);
@@ -103,6 +103,7 @@ const Chats = () => {
                         onlinePeople && 
                         Object.keys(onlinePeople).map(userId => {
                             if (!userId || !onlinePeople[userId]) return null;
+                            
                             return (
                                 <ContactCard
                                     key={userId} 
@@ -110,7 +111,7 @@ const Chats = () => {
                                     cardUsername={onlinePeople[userId]}
                                     cardLastMessage="so"
                                     onClick={() => contactSelectHandler(userId)}
-                                    className={`${selectedContactId === userId ? "border-4 border-blue-500 bg-blue-400" : ""}`}
+                                    className={`${userId === selectedContactId ? "bg-blue-400 border-4 border-blue-500" : ""}`}
                                 />
                             )
                             

@@ -1,4 +1,6 @@
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, useEffect } from "react";
+import { ContactSelectedIdAtom } from "../../store/atoms/ContactSelect";
+import { useRecoilState } from "recoil";
 
 
 interface ContactCardProps {
@@ -16,10 +18,16 @@ export const ContactCard = ({
     onClick,
     className
 }: ContactCardProps) => {
+
+    const [ selectedContactId, setSelectedContactId ] = useRecoilState(ContactSelectedIdAtom);
+
+    useEffect(() => {
+        console.log(cardUserId, selectedContactId)
+    })
     return (
         <div
             className={`h-14 rounded-md p-2 cursor-pointer bg-blue-500 hover:scale-[102%]
-            flex items-center gap-x-4 ${className}`}
+            flex items-center gap-x-4 ${className} ${cardUserId === selectedContactId ? "bg-blue-400 border-4 border-blue-500" : ""}`}
             onClick={onClick}
         >
             <div

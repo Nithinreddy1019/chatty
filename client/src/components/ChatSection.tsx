@@ -30,7 +30,7 @@ export const ChatSection = () => {
         });
         
 
-        console.log(contactUsername);
+        // console.log(contactUsername);
     }, [selectedContactId])
 
     return (
