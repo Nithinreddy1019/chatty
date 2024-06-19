@@ -20,3 +20,12 @@ model User {
   username String 
   CreatedAt DateTime @default(now())
 }
+
+
+model Message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  senderId String @db.ObjectId
+  recepientId String @db.ObjectId
+  text String
+  CreatedAt DateTime @default(now())
+}
