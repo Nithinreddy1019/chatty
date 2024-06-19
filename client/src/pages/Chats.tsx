@@ -1,6 +1,6 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useUserLoggedIn } from "../hooks/useUserLoggedIn";
-import { userDetailsAtom, userTokenAtom } from "../store/atoms/UserAtom";
+import { userDetailsAtom, userTokenAtom, wsAtom } from "../store/atoms/UserAtom";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ContactCard } from "../components/ui/ContactCard";
@@ -9,6 +9,7 @@ import { ChatSection } from "../components/ChatSection";
 import { ContactSelectAtom, ContactSelectedIdAtom } from "../store/atoms/ContactSelect";
 
 import { IoIosChatboxes } from "react-icons/io";
+import { chatMessagesAtom } from "../store/atoms/ChatMessages";
 
 const Chats = () => {
 
@@ -20,9 +21,12 @@ const Chats = () => {
     const [token, setToken] = useRecoilState(userTokenAtom);
     const [contactSelected, setContactSelected] = useRecoilState(ContactSelectAtom);
     
-    const [ws, setWs] = useState<WebSocket | null>(null);
+    const [ws, setWs] = useRecoilState(wsAtom);
     const [onlinePeople, setOnlinePeople] = useState<{ [key: string]: string }>({});
     const [ selectedContactId, setSelectedContactId ] = useRecoilState(ContactSelectedIdAtom);
+
+    const [ chatMessages, setChatMessages ] = useRecoilState(chatMessagesAtom);
+
 
     const userdertails = useRecoilValue(userDetailsAtom);
 
@@ -44,8 +48,8 @@ const Chats = () => {
     }, [loggedIn, token]);
 
     useEffect(() => {
-        
-    }, [onlinePeople])
+        console.log(selectedContactId);
+    }, [])
 
     const handleMessage = async (e: MessageEvent) => {
         const messageData = await JSON.parse(e.data);
@@ -61,15 +65,19 @@ const Chats = () => {
            
             delete updatedPeople[userdertails.userId]
             setOnlinePeople({...updatedPeople});
-        };
+        } else {
+            setChatMessages(prev => [...prev, {senderId:messageData.sender, recepientId: userdertails.userId, text: messageData.text, CreatedAt: messageData.CreatedAt}])
+            console.log(messageData)
+        }
         
         
     };
 
 
     const contactSelectHandler = async (userId: string) => {
-        setSelectedContactId(userId);
         setContactSelected(true);
+        setSelectedContactId(userId);
+        
     };
 
     if(loading) {
@@ -110,7 +118,7 @@ const Chats = () => {
                                     cardUsername={onlinePeople[userId]}
                                     cardLastMessage="so"
                                     onClick={() => contactSelectHandler(userId)}
-                                    className={`${selectedContactId === userId ? "border-4 border-blue-500 bg-blue-400" : ""}`}
+                                    Class={`${userId === selectedContactId ? "bg-blue-400 border-4 border-blue-500" : ""}`}
                                 />
                             )
                             
@@ -123,7 +131,7 @@ const Chats = () => {
             </div>
             <div
                 className={`h-full w-3/4
-                ${!contactSelected ? "hidden md:w-3/4" : ""}`}
+                ${!contactSelected ? "hidden md:w-3/4" : "w-full md:w-3/4"}`}
             >
                 {
                     contactSelected && <ChatSection />

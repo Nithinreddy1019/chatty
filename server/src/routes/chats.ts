@@ -41,3 +41,47 @@ chat_router.post("/chat", authMiddleware, async (req: RequestObject, res: Respon
         });
     };
 });
+
+
+chat_router.post("/getChats", authMiddleware, async (req:RequestObject, res) => {
+
+    const userId = req.userId;
+    const { selectedContact } = req.body;
+
+    if(!selectedContact) {
+        return res.status(401).json({
+            error: "no id present"
+        });
+    };
+
+
+    try {
+        const messages = await prisma.message.findMany({
+            where: {
+                senderId: {
+                    in: [userId, selectedContact]
+                },
+                recepientId: {
+                    in: [userId, selectedContact]
+                }
+            },
+            select: {
+                senderId: true,
+                recepientId: true,
+                text: true,
+                CreatedAt: true
+            },
+            orderBy: {
+                CreatedAt: "asc"
+            }
+        });
+    
+        return res.status(200).json(messages);
+    } catch (error) {
+        return res.status(500).json({
+            error: "Internal server error"
+        });
+    };
+
+
+});

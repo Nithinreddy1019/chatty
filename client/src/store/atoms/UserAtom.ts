@@ -21,3 +21,8 @@ export const userDetailsAtom = atom({
     }
 });
 
+
+export const wsAtom = atom<WebSocket | null>({
+    key: "wsAtom",
+    default: null
+});
